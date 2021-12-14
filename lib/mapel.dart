@@ -3,11 +3,13 @@ import 'package:hive/hive.dart';
 part 'mapel.g.dart';
 
 @HiveType(typeId: 1)
-class Mapel {
-  Mapel({required this.title, required this.kelas});
+class Mapel extends HiveObject {
   @HiveField(0)
-  String title;
+  late String title;
 
   @HiveField(1)
-  String kelas;
+  late String kelas;
+
+  @HiveField(2)
+  late var jam;
 }
