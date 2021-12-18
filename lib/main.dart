@@ -1,27 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hive/mapel.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-
+import 'boxes.dart';
 import 'mapel_dialog.dart';
-import 'mapels.dart';
+//import 'mapels.dart';
 
-late Box box1;
-late Box box2;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
   Hive.registerAdapter(MapelAdapter());
-  runApp(const MyApp());
+  await Hive.openBox<Mapel>('mapels');
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
   static final String titleApp = 'Class Scheduller';
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      title: titleApp,
       theme: ThemeData(primarySwatch: Colors.blue),
       home: MyHomePage(),
     );
@@ -29,8 +28,6 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key}) : super(key: key);
-
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
@@ -51,12 +48,21 @@ class _MyHomePageState extends State<MyHomePage> {
         centerTitle: true,
       ),
       body: ValueListenableBuilder<Box<Mapel>>(
-        valueListenable: Mapels.getMapels().listenable(),
+        valueListenable: Boxes.getMapels().listenable(),
         builder: (context, box, _) {
           final mapels = box.values.toList().cast<Mapel>();
 
           return buildContent(mapels);
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: () => showDialog(
+          context: context,
+          builder: (context) => MapelDialog(
+            onClickedDone: addMapel,
+          ),
+        ),
       ),
     );
   }
@@ -161,7 +167,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ..kelas = kelas
       ..jam = jam;
 
-    final box = Mapels.getMapels();
+    final box = Boxes.getMapels();
     box.add(mapel);
   }
 
